@@ -243,12 +243,15 @@ export default function ConfidentPatientForm() {
   const [isSubmitted, setIsSubmitted] = useState(false);
 
   const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     const { name, value, type } = e.target;
     setFormData((prev) => ({
       ...prev,
-      [name]: type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
+      [name]:
+        type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
     }));
   };
 
@@ -311,7 +314,9 @@ export default function ConfidentPatientForm() {
     );
   }
 
-  const progressPercent = Math.round(((currentSection + 1) / sections.length) * 100);
+  const progressPercent = Math.round(
+    ((currentSection + 1) / sections.length) * 100
+  );
 
   return (
     <div className="confident-intake-root">
@@ -325,10 +330,16 @@ export default function ConfidentPatientForm() {
             </div>
             <div className="conf-header-right">
               <img src={logo} alt="Confident Logo" className="h-8" />
-              <div className="conf-lang-switch" role="group" aria-label="Language switch">
+              <div
+                className="conf-lang-switch"
+                role="group"
+                aria-label="Language switch"
+              >
                 <button
                   type="button"
-                  className={`conf-lang-btn ${lang === "en" ? "is-active" : ""}`}
+                  className={`conf-lang-btn ${
+                    lang === "en" ? "is-active" : ""
+                  }`}
                   aria-pressed={lang === "en"}
                   onClick={() => setLang("en")}
                 >
@@ -336,7 +347,9 @@ export default function ConfidentPatientForm() {
                 </button>
                 <button
                   type="button"
-                  className={`conf-lang-btn ${lang === "sr" ? "is-active" : ""}`}
+                  className={`conf-lang-btn ${
+                    lang === "sr" ? "is-active" : ""
+                  }`}
                   aria-pressed={lang === "sr"}
                   onClick={() => setLang("sr")}
                 >
@@ -352,12 +365,19 @@ export default function ConfidentPatientForm() {
               <span className="conf-meta">
                 {t.step} {currentSection + 1} {t.of} {sections.length}
               </span>
-              <span className="conf-meta">{progressPercent}% {t.percent}</span>
+              <span className="conf-meta">
+                {progressPercent}% {t.percent}
+              </span>
             </div>
             <div className="conf-progress" aria-hidden>
-              <div className="conf-progress-bar" style={{ width: `${progressPercent}%` }} />
+              <div
+                className="conf-progress-bar"
+                style={{ width: `${progressPercent}%` }}
+              />
             </div>
-            <div className="conf-progress-label">{sections[currentSection]}</div>
+            <div className="conf-progress-label">
+              {sections[currentSection]}
+            </div>
           </div>
 
           {/* Form */}
@@ -413,9 +433,13 @@ export default function ConfidentPatientForm() {
                     >
                       <option value="">{t.fields.genderOpts.empty}</option>
                       <option value="male">{t.fields.genderOpts.male}</option>
-                      <option value="female">{t.fields.genderOpts.female}</option>
+                      <option value="female">
+                        {t.fields.genderOpts.female}
+                      </option>
                       <option value="other">{t.fields.genderOpts.other}</option>
-                      <option value="prefer-not-to-say">{t.fields.genderOpts.prefer}</option>
+                      <option value="prefer-not-to-say">
+                        {t.fields.genderOpts.prefer}
+                      </option>
                     </select>
                   </div>
                 </div>
@@ -506,7 +530,9 @@ export default function ConfidentPatientForm() {
                 </div>
                 <div className="conf-grid">
                   <div className="conf-field">
-                    <label className="conf-label">{t.fields.emergencyName}</label>
+                    <label className="conf-label">
+                      {t.fields.emergencyName}
+                    </label>
                     <input
                       className="conf-input"
                       type="text"
@@ -517,7 +543,9 @@ export default function ConfidentPatientForm() {
                     />
                   </div>
                   <div className="conf-field">
-                    <label className="conf-label">{t.fields.emergencyPhone}</label>
+                    <label className="conf-label">
+                      {t.fields.emergencyPhone}
+                    </label>
                     <input
                       className="conf-input"
                       type="tel"
@@ -528,7 +556,9 @@ export default function ConfidentPatientForm() {
                     />
                   </div>
                   <div className="conf-field conf-span-2">
-                    <label className="conf-label">{t.fields.emergencyRel}</label>
+                    <label className="conf-label">
+                      {t.fields.emergencyRel}
+                    </label>
                     <select
                       className="conf-input"
                       name="emergencyRelationship"
@@ -536,13 +566,27 @@ export default function ConfidentPatientForm() {
                       onChange={handleInputChange}
                       required
                     >
-                      <option value="">{t.fields.emergencyRelOpts.empty}</option>
-                      <option value="spouse">{t.fields.emergencyRelOpts.spouse}</option>
-                      <option value="parent">{t.fields.emergencyRelOpts.parent}</option>
-                      <option value="child">{t.fields.emergencyRelOpts.child}</option>
-                      <option value="sibling">{t.fields.emergencyRelOpts.sibling}</option>
-                      <option value="friend">{t.fields.emergencyRelOpts.friend}</option>
-                      <option value="other">{t.fields.emergencyRelOpts.other}</option>
+                      <option value="">
+                        {t.fields.emergencyRelOpts.empty}
+                      </option>
+                      <option value="spouse">
+                        {t.fields.emergencyRelOpts.spouse}
+                      </option>
+                      <option value="parent">
+                        {t.fields.emergencyRelOpts.parent}
+                      </option>
+                      <option value="child">
+                        {t.fields.emergencyRelOpts.child}
+                      </option>
+                      <option value="sibling">
+                        {t.fields.emergencyRelOpts.sibling}
+                      </option>
+                      <option value="friend">
+                        {t.fields.emergencyRelOpts.friend}
+                      </option>
+                      <option value="other">
+                        {t.fields.emergencyRelOpts.other}
+                      </option>
                     </select>
                   </div>
                 </div>
@@ -566,14 +610,26 @@ export default function ConfidentPatientForm() {
                       required
                     >
                       <option value="">{t.fields.hearOpts.empty}</option>
-                      <option value="friend-family">{t.fields.hearOpts.fam}</option>
+                      <option value="friend-family">
+                        {t.fields.hearOpts.fam}
+                      </option>
                       <option value="google">{t.fields.hearOpts.google}</option>
-                      <option value="social-media">{t.fields.hearOpts.social}</option>
-                      <option value="insurance">{t.fields.hearOpts.insurance}</option>
-                      <option value="yellow-pages">{t.fields.hearOpts.yellow}</option>
-                      <option value="newspaper">{t.fields.hearOpts.newspaper}</option>
+                      <option value="social-media">
+                        {t.fields.hearOpts.social}
+                      </option>
+                      <option value="insurance">
+                        {t.fields.hearOpts.insurance}
+                      </option>
+                      <option value="yellow-pages">
+                        {t.fields.hearOpts.yellow}
+                      </option>
+                      <option value="newspaper">
+                        {t.fields.hearOpts.newspaper}
+                      </option>
                       <option value="radio">{t.fields.hearOpts.radio}</option>
-                      <option value="drove-by">{t.fields.hearOpts.drove}</option>
+                      <option value="drove-by">
+                        {t.fields.hearOpts.drove}
+                      </option>
                       <option value="other">{t.fields.hearOpts.other}</option>
                     </select>
                   </div>
@@ -603,14 +659,29 @@ export default function ConfidentPatientForm() {
                   <h3 className="conf-review-title">{t.review.title}</h3>
                   <div className="conf-review-grid">
                     <div>
-                      <p><strong>{t.review.name}:</strong> {formData.firstName} {formData.lastName}</p>
-                      <p><strong>{t.review.dob}:</strong> {formData.dateOfBirth}</p>
-                      <p><strong>{t.review.phone}:</strong> {formData.phone}</p>
-                      <p><strong>{t.review.email}:</strong> {formData.email}</p>
+                      <p>
+                        <strong>{t.review.name}:</strong> {formData.firstName}{" "}
+                        {formData.lastName}
+                      </p>
+                      <p>
+                        <strong>{t.review.dob}:</strong> {formData.dateOfBirth}
+                      </p>
+                      <p>
+                        <strong>{t.review.phone}:</strong> {formData.phone}
+                      </p>
+                      <p>
+                        <strong>{t.review.email}:</strong> {formData.email}
+                      </p>
                     </div>
                     <div>
-                      <p><strong>{t.review.emergency}:</strong> {formData.emergencyName}</p>
-                      <p><strong>{t.review.heard}:</strong> {formData.hearAboutUs}</p>
+                      <p>
+                        <strong>{t.review.emergency}:</strong>{" "}
+                        {formData.emergencyName}
+                      </p>
+                      <p>
+                        <strong>{t.review.heard}:</strong>{" "}
+                        {formData.hearAboutUs}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -647,17 +718,26 @@ export default function ConfidentPatientForm() {
                 type="button"
                 onClick={prevSection}
                 disabled={currentSection === 0}
-                className={`btn button conf-btn ${currentSection === 0 ? "conf-btn-disabled" : "conf-btn-dark"}`}
+                className={`btn button conf-btn ${
+                  currentSection === 0 ? "conf-btn-disabled" : "conf-btn-dark"
+                }`}
               >
                 {t.buttons.prev}
               </button>
 
               {currentSection < sections.length - 1 ? (
-                <button type="button" onClick={nextSection} className="btn btn-primary button primary-btn conf-btn conf-btn-primary">
+                <button
+                  type="button"
+                  onClick={nextSection}
+                  className="btn btn-primary button primary-btn conf-btn conf-btn-primary"
+                >
                   {t.buttons.next}
                 </button>
               ) : (
-                <button type="submit" className="btn btn-primary button primary-btn conf-btn conf-btn-primary conf-btn-lg">
+                <button
+                  type="submit"
+                  className="btn btn-primary button primary-btn conf-btn conf-btn-primary conf-btn-lg"
+                >
                   {t.buttons.submit}
                 </button>
               )}
@@ -700,7 +780,7 @@ function ConfidentStyles() {
   --conf-font: 'FreightNeoW03 Regular', 'FreightNeoW03', 'FreightNeoW03-Regular', -apple-system, system-ui, 'Segoe UI', Roboto, Helvetica, Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji';
 }
 
-* html, body { margin: 0; padding: 0; }  
+html, body, #root, .confident-intake-root, .conf-wrapper { height: 100% }  
 .conf-logo { display:block; height: 36px; }  /* tweak as you like */
 .conf-wrapper, .conf-wrapper * { font-family: var(--conf-font); }
 
@@ -712,7 +792,7 @@ function ConfidentStyles() {
 .conf-header { padding: 20px 24px; display:flex; align-items:center; justify-content:space-between; gap: 12px; }
 .conf-header-right { display:flex; align-items:center; gap: 12px; }
 .conf-brand { color: var(--conf-primary); font-weight: 800; letter-spacing: .2px; }
-.conf-title { margin: 0; font-size: 28px; line-height: 1.2; font-weight: 800; color: var(--conf-text); }
+.conf-title { margin: 0; font-size: 28px; line-height: 1.2; font-weight: 500; color: var(--conf-text); }
 .conf-subtitle { margin: 6px 0 0; color: var(--conf-muted); font-size: 14px; }
 
 /* Language segmented control */
@@ -725,26 +805,26 @@ function ConfidentStyles() {
 .conf-meta { font-size: 13px; color: var(--conf-muted); font-weight: 600; }
 .conf-progress { height: 6px; background: #eef2f7; border-radius: 999px; overflow: hidden; }
 .conf-progress-bar { height: 6px; background: var(--conf-primary); border-radius: 999px; transition: width .3s ease; }
-.conf-progress-label { text-align:center; margin-top: 8px; font-weight: 700; color: var(--conf-text); }
+.conf-progress-label { text-align:center; margin-top: 8px; font-weight: 500; color: var(--conf-text); }
 
 .conf-form { padding: 28px; }
 .conf-section { display:block; }
 .conf-section-head { margin-bottom: 18px; }
-.conf-section-title { margin: 0; font-size: 22px; font-weight: 800; color: var(--conf-text); }
+.conf-section-title { margin: 0; font-size: 22px; font-weight: 500; color: var(--conf-text); }
 
 .conf-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
 @media (max-width: 780px) { .conf-grid { grid-template-columns: 1fr; } }
 .conf-span-2 { grid-column: span 2; }
 
 .conf-field { display:block; }
-.conf-label { display:block; margin-bottom: 8px; font-weight: 700; font-size: 14px; color: #374151; }
+.conf-label { display:block; margin-bottom: 8px;  font-size: 14px; color: #374151; }
 
 .conf-input { width:100%; padding: 12px 12px; background: #fff; border: 1px solid var(--conf-border); border-radius: 10px; font-size: 16px; outline:none; transition: border-color .2s, box-shadow .2s, background .2s; }
 .conf-input:focus { border-color: var(--conf-primary); box-shadow: 0 0 0 4px color-mix(in srgb, var(--conf-primary) 15%, transparent); }
 .conf-textarea { min-height: 120px; resize: vertical; }
 
 .conf-review { background: #f8fafc; border: 1px dashed #e5e7eb; border-radius: 12px; padding: 18px; margin-bottom: 16px; }
-.conf-review-title { margin: 0 0 10px; font-weight: 800; color: var(--conf-text); }
+.conf-review-title { margin: 0 0 10px; font-weight: 500; color: var(--conf-text); }
 .conf-review-grid { display:grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; font-size: 14px; color: #1f2937; }
 @media (max-width: 780px) { .conf-review-grid { grid-template-columns: 1fr; } }
 
@@ -754,7 +834,7 @@ function ConfidentStyles() {
 
 .conf-actions { display:flex; justify-content: space-between; gap: 12px; margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--conf-border); }
 
-.conf-btn { border-radius: 10px; font-weight: 800; letter-spacing: .2px; padding: 12px 20px; cursor: pointer; transition: transform .06s ease, filter .15s ease; }
+.conf-btn { border-radius: 10px;  letter-spacing: .2px; padding: 12px 20px; cursor: pointer; transition: transform .06s ease, filter .15s ease; }
 .conf-btn:active { transform: translateY(1px); }
 .conf-btn-dark { background: #111827; color: #fff; opacity: .9; }
 .conf-btn-dark:hover { opacity: 1; }
