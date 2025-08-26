@@ -1,6 +1,7 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { CheckCircle } from "lucide-react";
 import logo from "./assets/confident.svg";
+import Signature from "@uiw/react-signature";
 
 /**
  * Confident Patient Intake Form — EN/SR language toggle + FreightNeoW03
@@ -21,7 +22,7 @@ interface PatientData {
   email: string;
   address: string;
   city: string;
-  state: string;
+  country: string;
   zipCode: string;
 
   // Emergency Contact
@@ -72,7 +73,7 @@ const copy: Record<Lang, any> = {
       email: "Email Address *",
       address: "Street Address *",
       city: "City *",
-      state: "State / Region",
+      country: "Country",
       zip: "ZIP / Postal Code",
       emergencyName: "Full Name *",
       emergencyPhone: "Phone Number *",
@@ -156,7 +157,7 @@ const copy: Record<Lang, any> = {
       email: "Email adresa *",
       address: "Ulica i broj *",
       city: "Grad *",
-      state: "Država / Region",
+      country: "Država / Region",
       zip: "Poštanski broj",
       emergencyName: "Puno ime *",
       emergencyPhone: "Broj telefona *",
@@ -214,7 +215,8 @@ const copy: Record<Lang, any> = {
 // ---------- Component ----------
 export default function ConfidentPatientForm() {
   const [lang, setLang] = useState<Lang>("en");
-
+  const sigCanvas = useRef(null);
+  const handle = (evn) => sigCanvas.current?.clear();
   const [formData, setFormData] = useState<PatientData>({
     firstName: "",
     lastName: "",
@@ -224,7 +226,7 @@ export default function ConfidentPatientForm() {
     email: "",
     address: "",
     city: "",
-    state: "",
+    country: "",
     zipCode: "",
     emergencyName: "",
     emergencyPhone: "",
@@ -293,7 +295,7 @@ export default function ConfidentPatientForm() {
                   email: "",
                   address: "",
                   city: "",
-                  state: "",
+                  country: "",
                   zipCode: "",
                   emergencyName: "",
                   emergencyPhone: "",
@@ -503,8 +505,8 @@ export default function ConfidentPatientForm() {
                     <input
                       className="conf-input"
                       type="text"
-                      name="state"
-                      value={formData.state}
+                      name="country"
+                      value={formData.country}
                       onChange={handleInputChange}
                     />
                   </div>
@@ -709,6 +711,36 @@ export default function ConfidentPatientForm() {
                     <span>{t.consent.treatment}</span>
                   </label>
                 </div>
+
+                <div className="conf-signature-container">
+                  <div className="conf-signature">
+                    <Signature
+                      ref={sigCanvas}
+                      options={{
+                        size: 3,
+                        smoothing: 0.46,
+                        thinning: 0.73,
+                        streamline: 0.5,
+                        start: {
+                          taper: 0,
+                          cap: true,
+                        },
+                        end: {
+                          taper: 0,
+                          cap: true,
+                        },
+                      }}
+                    />
+                    <br />
+                  </div>
+                  <button
+                    type="button"
+                    className="conf-btn conf-btn-dark"
+                    onClick={handle}
+                  >
+                    Clear
+                  </button>
+                </div>
               </div>
             )}
 
@@ -780,15 +812,14 @@ function ConfidentStyles() {
   --conf-font: 'FreightNeoW03 Regular', 'FreightNeoW03', 'FreightNeoW03-Regular', -apple-system, system-ui, 'Segoe UI', Roboto, Helvetica, Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji';
 }
 
-html, body, #root, .confident-intake-root, .conf-wrapper { height: 100% }  
+html, body, #root, .confident-intake-root, .conf-wrapper { min-height:100%; height:auto; background: var(--conf-bg); }  
 .conf-logo { display:block; height: 36px; }  /* tweak as you like */
 .conf-wrapper, .conf-wrapper * { font-family: var(--conf-font); }
 
 .conf-wrapper { background: var(--conf-bg); padding: 40px 16px; }
 .conf-container { max-width: 1100px; margin: 0 auto; }
 
-.conf-card { background: var(--conf-card); border: 1px solid var(--conf-border); border-radius: var(--conf-radius); box-shadow: var(--conf-shadow); }
-
+.conf-card { background: var(--conf-card); border: 1px solid var(--conf-border); border-radius: var(--conf-radius); box-shadow: var(--conf-shadow); overflow:hidden; }
 .conf-header { padding: 20px 24px; display:flex; align-items:center; justify-content:space-between; gap: 12px; }
 .conf-header-right { display:flex; align-items:center; gap: 12px; }
 .conf-brand { color: var(--conf-primary); font-weight: 800; letter-spacing: .2px; }
@@ -807,13 +838,31 @@ html, body, #root, .confident-intake-root, .conf-wrapper { height: 100% }
 .conf-progress-bar { height: 6px; background: var(--conf-primary); border-radius: 999px; transition: width .3s ease; }
 .conf-progress-label { text-align:center; margin-top: 8px; font-weight: 500; color: var(--conf-text); }
 
-.conf-form { padding: 28px; }
+.conf-form { padding: 28px; overflow-wrap:anywhere; }
 .conf-section { display:block; }
 .conf-section-head { margin-bottom: 18px; }
 .conf-section-title { margin: 0; font-size: 22px; font-weight: 500; color: var(--conf-text); }
+.conf-signature-container { display: flex; flex-direction: column; align-items: flex-start;  margin-top: 10px; gap:0.5rem;}
+.conf-signature {  width:min(350px, 100%);
+  /* optional frame if you want it visible: */
+  border:1px solid var(--conf-border);
+  border-radius:8px;
+  overflow:hidden;               /* ensure canvas corners clip to radius */
+  background:#fff; }
+
+.conf-signature canvas{
+  display:block;                 /* removes baseline whitespace */
+  width:100% !important;
+  height:200px !important;       /* matches your min-height */
+}
 
 .conf-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
-@media (max-width: 780px) { .conf-grid { grid-template-columns: 1fr; } }
+@media (max-width: 780px) { 
+.conf-grid { grid-template-columns: 1fr; } 
+.conf-header { align-items: flex-start; }
+.conf-header-right { flex-direction: column-reverse; align-items: flex-end;}
+
+}
 .conf-span-2 { grid-column: span 2; }
 
 .conf-field { display:block; }
@@ -830,7 +879,7 @@ html, body, #root, .confident-intake-root, .conf-wrapper { height: 100% }
 
 .conf-consent { display:flex; flex-direction: column; gap: 12px; }
 .conf-checkbox { display:flex; align-items:flex-start; gap: 10px; font-size: 14px; color: #374151; }
-.conf-checkbox input { margin-top: 3px; width: 18px; height: 18px; }
+.conf-checkbox input { margin-top: 5px;}
 
 .conf-actions { display:flex; justify-content: space-between; gap: 12px; margin-top: 24px; padding-top: 18px; border-top: 1px solid var(--conf-border); }
 
@@ -851,6 +900,7 @@ html, body, #root, .confident-intake-root, .conf-wrapper { height: 100% }
 .confident-intake-root {
   margin: 0 !important;
   padding-bottom: 0 !important;
+  background: var(--conf-bg);
 }
     `}</style>
   );
