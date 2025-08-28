@@ -5,10 +5,10 @@ import Signature from "@uiw/react-signature";
 
 /**
  * Confident Patient Intake Form — EN/SR language toggle + FreightNeoW03
- * ---------------------------------------------------------------------
- * - Adds a simple language switch (EN / SR) in the header.
- * - All labels, placeholders, section names, buttons, and messages are i18n'd.
- * - Keeps site-matched styling + 'FreightNeoW03 Regular' font.
+ * - Responsive, container-driven grid
+ * - A11y improvements (labels, progress semantics, focus)
+ * - Mobile ergonomics (autoComplete, inputMode)
+ * - Signature clear + i18n
  */
 
 // ---------- Types ----------
@@ -123,7 +123,12 @@ const copy: Record<Lang, any> = {
       text: "Your information has been submitted successfully. Please have a seat and we'll call you shortly.",
       newForm: "New form",
     },
-    buttons: { prev: "Previous", next: "Next", submit: "Submit Form" },
+    buttons: {
+      prev: "Previous",
+      next: "Next",
+      submit: "Submit Form",
+      clear: "Clear",
+    },
     langs: { en: "EN", sr: "SR" },
   },
   sr: {
@@ -207,7 +212,12 @@ const copy: Record<Lang, any> = {
       text: "Vaši podaci su uspešno poslati. Molimo vas, sačekajte — pozvaćemo vas uskoro.",
       newForm: "Novi formular",
     },
-    buttons: { prev: "Prethodno", next: "Sledeće", submit: "Pošalji formular" },
+    buttons: {
+      prev: "Prethodno",
+      next: "Sledeće",
+      submit: "Pošalji formular",
+      clear: "Obriši",
+    },
     langs: { en: "EN", sr: "SR" },
   },
 };
@@ -215,8 +225,9 @@ const copy: Record<Lang, any> = {
 // ---------- Component ----------
 export default function ConfidentPatientForm() {
   const [lang, setLang] = useState<Lang>("en");
-  const sigCanvas = useRef(null);
-  const handle = (evn) => sigCanvas.current?.clear();
+  const sigCanvas = useRef<any>(null);
+  const clearSig = () => sigCanvas.current?.clear();
+
   const [formData, setFormData] = useState<PatientData>({
     firstName: "",
     lastName: "",
@@ -238,7 +249,6 @@ export default function ConfidentPatientForm() {
   });
 
   const t = copy[lang];
-
   const sections = t.sections as string[];
 
   const [currentSection, setCurrentSection] = useState(0);
@@ -255,6 +265,35 @@ export default function ConfidentPatientForm() {
       [name]:
         type === "checkbox" ? (e.target as HTMLInputElement).checked : value,
     }));
+  };
+
+  const isSectionValid = (sec: number) => {
+    switch (sec) {
+      case 0: // Personal
+        return !!(
+          formData.firstName &&
+          formData.lastName &&
+          formData.dateOfBirth &&
+          formData.gender
+        );
+      case 1: // Contact
+        return !!(
+          formData.phone &&
+          formData.email &&
+          formData.address &&
+          formData.city
+        );
+      case 2: // Emergency
+        return !!(
+          formData.emergencyName &&
+          formData.emergencyPhone &&
+          formData.emergencyRelationship
+        );
+      case 3: // How you found us
+        return !!formData.hearAboutUs;
+      default:
+        return true;
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -371,7 +410,17 @@ export default function ConfidentPatientForm() {
                 {progressPercent}% {t.percent}
               </span>
             </div>
-            <div className="conf-progress" aria-hidden>
+            <div
+              className="conf-progress"
+              role="progressbar"
+              aria-label={t.headerTitle}
+              aria-valuemin={1}
+              aria-valuemax={sections.length}
+              aria-valuenow={currentSection + 1}
+              aria-valuetext={`${t.step} ${currentSection + 1} ${t.of} ${
+                sections.length
+              }`}
+            >
               <div
                 className="conf-progress-bar"
                 style={{ width: `${progressPercent}%` }}
@@ -392,41 +441,56 @@ export default function ConfidentPatientForm() {
                 </div>
                 <div className="conf-grid">
                   <div className="conf-field">
-                    <label className="conf-label">{t.fields.firstName}</label>
+                    <label className="conf-label" htmlFor="firstName">
+                      {t.fields.firstName}
+                    </label>
                     <input
+                      id="firstName"
                       className="conf-input"
                       type="text"
                       name="firstName"
                       value={formData.firstName}
                       onChange={handleInputChange}
                       required
+                      autoComplete="given-name"
                     />
                   </div>
                   <div className="conf-field">
-                    <label className="conf-label">{t.fields.lastName}</label>
+                    <label className="conf-label" htmlFor="lastName">
+                      {t.fields.lastName}
+                    </label>
                     <input
+                      id="lastName"
                       className="conf-input"
                       type="text"
                       name="lastName"
                       value={formData.lastName}
                       onChange={handleInputChange}
                       required
+                      autoComplete="family-name"
                     />
                   </div>
                   <div className="conf-field">
-                    <label className="conf-label">{t.fields.dateOfBirth}</label>
+                    <label className="conf-label" htmlFor="dob">
+                      {t.fields.dateOfBirth}
+                    </label>
                     <input
+                      id="dob"
                       className="conf-input"
                       type="date"
                       name="dateOfBirth"
                       value={formData.dateOfBirth}
                       onChange={handleInputChange}
                       required
+                      autoComplete="bday"
                     />
                   </div>
                   <div className="conf-field">
-                    <label className="conf-label">{t.fields.gender}</label>
+                    <label className="conf-label" htmlFor="gender">
+                      {t.fields.gender}
+                    </label>
                     <select
+                      id="gender"
                       className="conf-input"
                       name="gender"
                       value={formData.gender}
@@ -456,8 +520,11 @@ export default function ConfidentPatientForm() {
                 </div>
                 <div className="conf-grid">
                   <div className="conf-field">
-                    <label className="conf-label">{t.fields.phone}</label>
+                    <label className="conf-label" htmlFor="phone">
+                      {t.fields.phone}
+                    </label>
                     <input
+                      id="phone"
                       className="conf-input"
                       type="tel"
                       name="phone"
@@ -465,59 +532,84 @@ export default function ConfidentPatientForm() {
                       onChange={handleInputChange}
                       required
                       placeholder={t.fields.phonePh}
+                      inputMode="tel"
+                      autoComplete="tel"
                     />
                   </div>
                   <div className="conf-field">
-                    <label className="conf-label">{t.fields.email}</label>
+                    <label className="conf-label" htmlFor="email">
+                      {t.fields.email}
+                    </label>
                     <input
+                      id="email"
                       className="conf-input"
                       type="email"
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
                       required
+                      autoComplete="email"
                     />
                   </div>
                   <div className="conf-field conf-span-2">
-                    <label className="conf-label">{t.fields.address}</label>
+                    <label className="conf-label" htmlFor="address">
+                      {t.fields.address}
+                    </label>
                     <input
+                      id="address"
                       className="conf-input"
                       type="text"
                       name="address"
                       value={formData.address}
                       onChange={handleInputChange}
                       required
+                      autoComplete="street-address"
                     />
                   </div>
                   <div className="conf-field">
-                    <label className="conf-label">{t.fields.city}</label>
+                    <label className="conf-label" htmlFor="city">
+                      {t.fields.city}
+                    </label>
                     <input
+                      id="city"
                       className="conf-input"
                       type="text"
                       name="city"
                       value={formData.city}
                       onChange={handleInputChange}
                       required
+                      autoComplete="address-level2"
                     />
                   </div>
                   <div className="conf-field">
-                    <label className="conf-label">{t.fields.state}</label>
+                    <label className="conf-label" htmlFor="country">
+                      {t.fields.country}
+                    </label>
                     <input
+                      id="country"
                       className="conf-input"
                       type="text"
                       name="country"
                       value={formData.country}
                       onChange={handleInputChange}
+                      autoComplete="country-name"
                     />
                   </div>
                   <div className="conf-field">
-                    <label className="conf-label">{t.fields.zip}</label>
+                    <label className="conf-label" htmlFor="zip">
+                      {t.fields.zip}
+                    </label>
                     <input
+                      id="zip"
                       className="conf-input"
                       type="text"
                       name="zipCode"
                       value={formData.zipCode}
                       onChange={handleInputChange}
+                      autoComplete="postal-code"
+                      inputMode="numeric"
+                      pattern="[0-9A-Za-z -]{3,12}"
+                      title="Enter a valid postal code"
                     />
                   </div>
                 </div>
@@ -532,36 +624,45 @@ export default function ConfidentPatientForm() {
                 </div>
                 <div className="conf-grid">
                   <div className="conf-field">
-                    <label className="conf-label">
+                    <label className="conf-label" htmlFor="emergencyName">
                       {t.fields.emergencyName}
                     </label>
                     <input
+                      id="emergencyName"
                       className="conf-input"
                       type="text"
                       name="emergencyName"
                       value={formData.emergencyName}
                       onChange={handleInputChange}
                       required
+                      autoComplete="name"
                     />
                   </div>
                   <div className="conf-field">
-                    <label className="conf-label">
+                    <label className="conf-label" htmlFor="emergencyPhone">
                       {t.fields.emergencyPhone}
                     </label>
                     <input
+                      id="emergencyPhone"
                       className="conf-input"
                       type="tel"
                       name="emergencyPhone"
                       value={formData.emergencyPhone}
                       onChange={handleInputChange}
                       required
+                      inputMode="tel"
+                      autoComplete="tel"
                     />
                   </div>
                   <div className="conf-field conf-span-2">
-                    <label className="conf-label">
+                    <label
+                      className="conf-label"
+                      htmlFor="emergencyRelationship"
+                    >
                       {t.fields.emergencyRel}
                     </label>
                     <select
+                      id="emergencyRelationship"
                       className="conf-input"
                       name="emergencyRelationship"
                       value={formData.emergencyRelationship}
@@ -603,8 +704,11 @@ export default function ConfidentPatientForm() {
                 </div>
                 <div className="conf-grid">
                   <div className="conf-field conf-span-2">
-                    <label className="conf-label">{t.fields.hearQ}</label>
+                    <label className="conf-label" htmlFor="hearAboutUs">
+                      {t.fields.hearQ}
+                    </label>
                     <select
+                      id="hearAboutUs"
                       className="conf-input"
                       name="hearAboutUs"
                       value={formData.hearAboutUs}
@@ -636,8 +740,11 @@ export default function ConfidentPatientForm() {
                     </select>
                   </div>
                   <div className="conf-field conf-span-2">
-                    <label className="conf-label">{t.fields.details}</label>
+                    <label className="conf-label" htmlFor="referralDetails">
+                      {t.fields.details}
+                    </label>
                     <textarea
+                      id="referralDetails"
                       className="conf-input conf-textarea"
                       name="referralDetails"
                       value={formData.referralDetails}
@@ -721,14 +828,8 @@ export default function ConfidentPatientForm() {
                         smoothing: 0.46,
                         thinning: 0.73,
                         streamline: 0.5,
-                        start: {
-                          taper: 0,
-                          cap: true,
-                        },
-                        end: {
-                          taper: 0,
-                          cap: true,
-                        },
+                        start: { taper: 0, cap: true },
+                        end: { taper: 0, cap: true },
                       }}
                     />
                     <br />
@@ -736,9 +837,9 @@ export default function ConfidentPatientForm() {
                   <button
                     type="button"
                     className="conf-btn conf-btn-dark"
-                    onClick={handle}
+                    onClick={clearSig}
                   >
-                    Clear
+                    {t.buttons.clear}
                   </button>
                 </div>
               </div>
@@ -761,7 +862,10 @@ export default function ConfidentPatientForm() {
                 <button
                   type="button"
                   onClick={nextSection}
-                  className="btn btn-primary button primary-btn conf-btn conf-btn-primary"
+                  className={`btn btn-primary button primary-btn conf-btn conf-btn-primary ${
+                    !isSectionValid(currentSection) ? "conf-btn-disabled" : ""
+                  }`}
+                  disabled={!isSectionValid(currentSection)}
                 >
                   {t.buttons.next}
                 </button>
@@ -784,7 +888,7 @@ export default function ConfidentPatientForm() {
   );
 }
 
-// ---------- Styles (FreightNeoW03 Regular + language switch) ----------
+// ---------- Styles (FreightNeoW03 Regular + language switch + responsive grid) ----------
 function ConfidentStyles() {
   return (
     <style>{`
@@ -810,9 +914,14 @@ function ConfidentStyles() {
   --conf-radius: var(--radius, 14px);
   --conf-shadow: var(--card-shadow, 0 10px 30px rgba(2, 6, 23, 0.06));
   --conf-font: 'FreightNeoW03 Regular', 'FreightNeoW03', 'FreightNeoW03-Regular', -apple-system, system-ui, 'Segoe UI', Roboto, Helvetica, Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji';
+
+  /* Fluid spacing tokens */
+  --space-1: clamp(8px, 1vw, 12px);
+  --space-2: clamp(12px, 2vw, 18px);
+  --space-3: clamp(16px, 3vw, 28px);
 }
 
-html, body, #root, .confident-intake-root, .conf-wrapper { min-height:100%; height:auto; background: var(--conf-bg); }  
+html, body, #root, .confident-intake-root, .conf-wrapper { min-height:100%; height:auto; background: var(--conf-bg); }
 .conf-logo { display:block; height: 36px; }  /* tweak as you like */
 .conf-wrapper, .conf-wrapper * { font-family: var(--conf-font); }
 
@@ -823,13 +932,14 @@ html, body, #root, .confident-intake-root, .conf-wrapper { min-height:100%; heig
 .conf-header { padding: 20px 24px; display:flex; align-items:center; justify-content:space-between; gap: 12px; }
 .conf-header-right { display:flex; align-items:center; gap: 12px; }
 .conf-brand { color: var(--conf-primary); font-weight: 800; letter-spacing: .2px; }
-.conf-title { margin: 0; font-size: 28px; line-height: 1.2; font-weight: 500; color: var(--conf-text); }
+.conf-title { margin: 0; font-size: clamp(22px, 3.2vw, 28px); line-height: 1.2; font-weight: 500; color: var(--conf-text); }
 .conf-subtitle { margin: 6px 0 0; color: var(--conf-muted); font-size: 14px; }
 
 /* Language segmented control */
 .conf-lang-switch { display:inline-flex; background: #f1f5f9; border: 1px solid #e5e7eb; padding: 4px; border-radius: 999px; }
-.conf-lang-btn { border: none; background: transparent; padding: 6px 12px; border-radius: 999px; font-weight: 800; color: #475569; cursor:pointer; }
+.conf-lang-btn { border: none; background: transparent; padding: 2px 6px; border-radius: 999px; font-weight: 500; color: #475569; cursor:pointer; }
 .conf-lang-btn.is-active { background: var(--conf-primary); color: var(--conf-primary-contrast); }
+.conf-lang-btn:focus-visible { outline: 2px solid var(--conf-primary); outline-offset: 2px; }
 
 .conf-progress-card { padding: 16px 20px; margin: 16px 0 24px; }
 .conf-progress-meta { display:flex; align-items:center; justify-content:space-between; margin-bottom: 10px; }
@@ -838,37 +948,53 @@ html, body, #root, .confident-intake-root, .conf-wrapper { min-height:100%; heig
 .conf-progress-bar { height: 6px; background: var(--conf-primary); border-radius: 999px; transition: width .3s ease; }
 .conf-progress-label { text-align:center; margin-top: 8px; font-weight: 500; color: var(--conf-text); }
 
-.conf-form { padding: 28px; overflow-wrap:anywhere; }
-.conf-section { display:block; }
+.conf-form { padding: var(--space-3); overflow-wrap:anywhere; }
+.conf-section { display:block; container-type: inline-size; }
 .conf-section-head { margin-bottom: 18px; }
-.conf-section-title { margin: 0; font-size: 22px; font-weight: 500; color: var(--conf-text); }
+.conf-section-title { margin: 0; font-size: clamp(18px, 2.5vw, 22px); font-weight: 500; color: var(--conf-text); }
 .conf-signature-container { display: flex; flex-direction: column; align-items: flex-start;  margin-top: 10px; gap:0.5rem;}
 .conf-signature {  width:min(350px, 100%);
-  /* optional frame if you want it visible: */
   border:1px solid var(--conf-border);
   border-radius:8px;
-  overflow:hidden;               /* ensure canvas corners clip to radius */
+  overflow:hidden; /* ensure canvas corners clip to radius */
   background:#fff; }
 
 .conf-signature canvas{
   display:block;                 /* removes baseline whitespace */
   width:100% !important;
-  height:200px !important;       /* matches your min-height */
+  height:200px !important;
 }
 
-.conf-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; }
-@media (max-width: 780px) { 
-.conf-grid { grid-template-columns: 1fr; } 
-.conf-header { align-items: flex-start; }
-.conf-header-right { flex-direction: column-reverse; align-items: flex-end;}
-
+/* Fluid, content-driven grid */
+.conf-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: repeat(auto-fit, minmax(clamp(220px, 40vw, 420px), 1fr));
 }
-.conf-span-2 { grid-column: span 2; }
+@container (min-width: 700px) {
+  .conf-span-2 { grid-column: span 2; }
+}
 
-.conf-field { display:block; }
+/* Keep header tweaks on small screens */
+@media (max-width: 780px) {
+  .conf-header { align-items: flex-start; }
+  .conf-header-right { flex-direction: column-reverse; align-items: flex-end; }
+}
+
+.conf-field { display:block; min-inline-size: 0; }
 .conf-label { display:block; margin-bottom: 8px;  font-size: 14px; color: #374151; }
 
-.conf-input { width:100%; padding: 12px 12px; background: #fff; border: 1px solid var(--conf-border); border-radius: 10px; font-size: 16px; outline:none; transition: border-color .2s, box-shadow .2s, background .2s; }
+.conf-input {
+  width:100%;
+  min-height: 44px;
+  padding: 12px 12px;
+  background: #fff;
+  border: 1px solid var(--conf-border);
+  border-radius: 10px;
+  font-size: clamp(14px, 1.6vw, 16px);
+  outline:none;
+  transition: border-color .2s, box-shadow .2s, background .2s;
+}
 .conf-input:focus { border-color: var(--conf-primary); box-shadow: 0 0 0 4px color-mix(in srgb, var(--conf-primary) 15%, transparent); }
 .conf-textarea { min-height: 120px; resize: vertical; }
 
@@ -901,6 +1027,12 @@ html, body, #root, .confident-intake-root, .conf-wrapper { min-height:100%; heig
   margin: 0 !important;
   padding-bottom: 0 !important;
   background: var(--conf-bg);
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .conf-progress-bar { transition: none; }
+  * { scroll-behavior: auto; }
 }
     `}</style>
   );
